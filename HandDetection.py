@@ -76,8 +76,7 @@ with mpHands.Hands(
                 # Set pip to -1 when is_pinch is not true
                 elif not is_pinch:
                     pip = -1
-                    start_coords = None
-
+                        
                 cv2.putText(
                     image, text='MID_X : %d  PIP: %d' % (mid_x, pip), org=(10, 30),
                     fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
