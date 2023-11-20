@@ -7,6 +7,6 @@
 4. pip install pyFirmata (설치)
 5. Arduino IDE 실행
 6. 보드 선택 후 업로드
-7. File - Examples - Fymaata - StandardFymaata
+7. File - Examples - Fymaata - StandardFymata
 8. 업로드
 9. 코드 실행
