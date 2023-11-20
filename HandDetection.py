@@ -1,6 +1,5 @@
 import cv2
 import mediapipe as mp
-import json
 import math
 
 mpHands = mp.solutions.hands
@@ -14,19 +13,12 @@ width, height = 960, 720
 cv2.namedWindow('Hand Detection', cv2.WINDOW_NORMAL)
 cv2.resizeWindow('Hand Detection', width, height)
 
-# List to store coordinates and object detection data
-hand_movement = []
 # Initialize the variable for pipette
 pip = -1
 # Declare and initialize the Coordinate variable
 pre_x = None
 pre_y = None
 start_coords = None
-
-# Function to save finger_movement_data to a JSON file
-def save_to_json(data, filename='hand_movement.json'):
-    with open(filename, 'w') as json_file:
-        json.dump(data, json_file, indent=2)
 
 with mpHands.Hands(
         max_num_hands=1,
@@ -81,13 +73,6 @@ with mpHands.Hands(
                         pip = 0
                     elif mid_x > 310:
                         pip = 1
-
-                    # Store relative coordinates
-                    hand_movement.append({
-                        'relative_x': relative_x,
-                        'relative_y': relative_y,
-                        'pip': pip
-                    })
                 # Set pip to -1 when is_pinch is not true
                 elif not is_pinch:
                     pip = -1
@@ -103,14 +88,6 @@ with mpHands.Hands(
                                 fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
                                 color=0, thickness=2)
 
-                    # Store relative coordinates
-                    if pre_x is not None and pre_y is not None:
-                        hand_movement.append({
-                            'mid_x': mid_x,
-                            'mid_y': mid_y,
-                            'pip': pip
-                        })
-
                 # Update previous coordinates
                 pre_x = mid_x
                 pre_y = mid_y
@@ -121,7 +98,6 @@ with mpHands.Hands(
         cv2.imshow('Hand Detection', image)
 
         if cv2.waitKey(1) & 0xFF == 27:  # Press 'esc' key to exit the program
-            save_to_json(hand_movement)
             break
 
 cap.release()
