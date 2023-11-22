@@ -1,6 +1,8 @@
 # Neo-Sense
 
 
+
+-----------------pyFirmata 설치 방법-----------------
 1. cmd 관리자모드로 실행
 2. conda create -n prac(아무이름)
 3. conda activate prac
