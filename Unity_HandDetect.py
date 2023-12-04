@@ -21,16 +21,10 @@ cap.set(4, 720)  # Set height
 cv2.namedWindow('image', cv2.WINDOW_AUTOSIZE)
 cv2.resizeWindow('image', 1280, 720)  # Set window size
 
-## Vibration | Arduino 
-comport = "COM9"
-board = pyfirmata.Arduino(comport) 
-lenPin = board.get_pin('d:11:p')
-
-
-# Hand Detect | Camera setup
-#cap = cv2.VideoCapture(1)
-#cv2.namedWindow('image', cv2.WINDOW_NORMAL) 
-#cv2.resizeWindow('image', 800, 600)
+# Vibration | Arduino 
+# comport = "COM11"
+# board = pyfirmata.Arduino(comport) 
+# lenPin = board.get_pin('d:3:p')
 
 ## Socket | Thumb Position - Unity socket setup
 UDP_IP_THUMB_POSITION = "localhost"
@@ -46,6 +40,8 @@ with mpHands.Hands(
     
     # Initialize the variable for pipette
     selectS = -1
+    trigger = 0
+
     
     # Hand Detect | Loop until the video ends
     while cap.isOpened():
@@ -69,11 +65,17 @@ with mpHands.Hands(
                 # Hand Detect | check for pinch
                 thumb_tip = hand_landmarks.landmark[4]
                 index_tip = hand_landmarks.landmark[8]
+                # pinky | trigger
+                pinky_tip = hand_landmarks.landmark[17]
 
                 thumb_x = int(thumb_tip.x * image.shape[1])
                 thumb_y = int(thumb_tip.y * image.shape[0])
                 index_x = int(index_tip.x * image.shape[1])
                 index_y = int(index_tip.y * image.shape[0])
+
+                # pinky | trigger   
+                pinky_x = int(pinky_tip.x * image.shape[1])
+                pinky_y = int(pinky_tip.y * image.shape[0])
 
                 mid_x = (thumb_x + index_x) // 2
                 mid_y = (thumb_y + index_y) // 2
@@ -88,13 +90,13 @@ with mpHands.Hands(
                 if is_pinch:                   
 
                     # Set pip when is_pinch is true
-                    if mid_x <= 600:
+                    if mid_x <= 500:
                         if mid_y > 300:
                             if selectS == -1:
                                 selectS = 0
                                 
                                 
-                    elif mid_x > 600:
+                    elif mid_x > 500:
                         if mid_y > 300:
                             if selectS == -1:
                                 selectS = 1  
@@ -102,15 +104,19 @@ with mpHands.Hands(
                 # NOT Pinch
                 elif not is_pinch:
                     selectS = -1
-                    lenPin.write(0)
+                    #lenPin.write(0)
 
                 if is_pinch and not selectS == -1:
                     vib = 1 - dist / 60
-                    lenPin.write(vib/2)            
+                    #lenPin.write(vib/2)            
                     print(vib*100/2)
 
+                # trigger
+                if is_pinch and thumb_y > pinky_y:
+                    trigger = 1
+
 				## Socket | send position
-                thumb_position_str = "{}, {}, 0 , {}, {}".format(mid_x, - mid_y, int(dist), selectS)
+                thumb_position_str = "{}, {}, 0 , {}, {}".format(mid_x, - mid_y, selectS, trigger)
                 sock_thumb_position.sendto(thumb_position_str.encode(), (UDP_IP_THUMB_POSITION, UDP_PORT_THUMB_POSITION))  # Send the thumb position via UDP
                                   
                 mpDraw.draw_landmarks(
@@ -121,12 +127,14 @@ with mpHands.Hands(
                     image, text='MID_X : %d MID_Y : %d Select: %d  Distance : %d' % (mid_x, mid_y, selectS, dist), org=(10, 30),
                     fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5,
                     color=255, thickness=2)
-
+        #else:
+            #lenPin.write(0)
         cv2.imshow('image', image)
 
         if cv2.waitKey(1) & 0xFF == 27:
-            lenPin.write(0)
+            #lenPin.write(0)
             cap.release()
             cv2.destroyAllWindows()
             sock_thumb_position.close()
             break
+
