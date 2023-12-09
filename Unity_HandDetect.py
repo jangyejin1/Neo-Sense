@@ -71,10 +71,8 @@ with mpHands.Hands(
             trigger_1_occurred = False
             trigger_2_occurred = False
             lenPin.write(0)
-
-            # Send reset information through Unity socket
-            reset_message = "r"
-            sock_thumb_position.sendto(reset_message.encode(), (UDP_IP_THUMB_POSITION, UDP_PORT_THUMB_POSITION))
+                
+            selectS = 9
             print(button)
 
         # Hand Detect | read info
@@ -186,31 +184,3 @@ with mpHands.Hands(
             cv2.destroyAllWindows()
             sock_thumb_position.close()
             break
-
-    #     # Check for 'r' key press
-    #     key = cv2.waitKey(1)
-    #     if key == 27:  # Check for ESC key
-    #         break
-    #     elif key == ord('r') or key == ord('R'):
-    #         # Reset variables and perform cleanup
-    #         selectS = -1
-    #         trigger = 0
-    #         trigger_1_occurred = False
-    #         trigger_2_occurred = False
-    #         lenPin.write(0)
-
-    #         # Send 'r' key press information through Unity socket
-    #         reset_message = "r"
-    #         sock_thumb_position.sendto(reset_message.encode(), (UDP_IP_THUMB_POSITION, UDP_PORT_THUMB_POSITION))
-
-    # # Release resources
-    # cap.release()
-    # cv2.destroyAllWindows()
-    # sock_thumb_position.close()
-
-        # if cv2.waitKey(1) & 0xFF == 27:
-        #     #lenPin.write(0)
-        #     cap.release()
-        #     cv2.destroyAllWindows()
-        #     sock_thumb_position.close()
-        #     break
