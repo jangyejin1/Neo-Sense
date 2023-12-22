@@ -24,7 +24,7 @@ cv2.resizeWindow('image', 1280, 720)  # Set window size
 
 
 # Arduino | Vibration
-comport = "COM5"
+comport = "COM9"
 board = pyfirmata.Arduino(comport) 
 lenPin = board.get_pin('d:3:p') #D3
 lenPin2 = board.get_pin('d:5:p') #D5
@@ -45,8 +45,9 @@ sock_thumb_position = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Constants
 FLIP_HORIZONTAL = 1
-MID_THRESHOLD_X = 900
-MID_THRESHOLD_Y = 300
+MID_THRESHOLD_X_2 = 970
+MID_THRESHOLD_X = 1140
+MID_THRESHOLD_Y = 350
 PINCH_THRESHOLD = 60
 
 
@@ -126,7 +127,7 @@ with mpHands.Hands(
                 # Pinch
                 if is_pinch:                   
                     # Pinch | Blue object
-                    if mid_x <= MID_THRESHOLD_X and mid_x >= 670:
+                    if mid_x <= MID_THRESHOLD_X and mid_x >= MID_THRESHOLD_X_2:
                         if mid_y > MID_THRESHOLD_Y:
                             if selectS == -1:
                                 selectS = 0
@@ -148,15 +149,15 @@ with mpHands.Hands(
 
                 # Trigger (전시 전 수정 요함)
                 if (test1.y - test2.y)/(test1.x - test2.x) >= 0 and thumb_y > pinky_y:
-                    
-                    # Trigger | Blue object 
-                    if selectS == 0 and not trigger_1_occurred:
-                        trigger = 1
-                        trigger_1_occurred = True
-                    # Trigger | Red object 
-                    elif selectS ==1 and not trigger_2_occurred:
-                        trigger = 2      
-                        trigger_2_occurred = True
+                    if mid_x <= MID_THRESHOLD_X_2: #and mid_y < MID_THRESHOLD_Y:
+                        # Trigger | Blue object 
+                        if selectS == 0 and not trigger_1_occurred:
+                            trigger = 1
+                            trigger_1_occurred = True
+                        # Trigger | Red object 
+                        elif selectS ==1 and not trigger_2_occurred:
+                            trigger = 2      
+                            trigger_2_occurred = True
 
                 # Vibration
                 if is_pinch and not selectS == -1 and trigger == 0 :
