@@ -9,6 +9,7 @@ using System.Collections.Generic;
 public class NameTag : MonoBehaviour
 {
     // 주 메서드에서 실행할 작업을 저장하는 큐
+    public List<GameObject>  Embers = new List<GameObject>();
     private Queue<System.Action> actionsToExecuteOnMainThread = new Queue<System.Action>();
 
     // 이동시킬 대상 오브젝트
@@ -35,6 +36,9 @@ public class NameTag : MonoBehaviour
         // UDP 클라이언트 초기화 및 비동기 수신 시작
         udpClient = new UdpClient(udpPort);
         udpClient.BeginReceive(new AsyncCallback(ReceiveCallback), null);
+        Embers[0].SetActive(true);
+        Embers[1].SetActive(false);
+        Embers[2].SetActive(false);
     }
 
     // UDP 수신 콜백 메서드
@@ -105,6 +109,9 @@ public class NameTag : MonoBehaviour
             redObject.localPosition = Vector3.zero;
             blueObject.gameObject.SetActive(true);
             redObject.gameObject.SetActive(true);
+            Embers[0].SetActive(true);
+            Embers[1].SetActive(false);
+            Embers[2].SetActive(false);
             return;  // Exit the method
         }
 
@@ -168,6 +175,9 @@ public class NameTag : MonoBehaviour
         if (t == 1)
         {
             blueObject.gameObject.SetActive(false);
+            Embers[0].SetActive(false);
+            Embers[1].SetActive(false);
+            Embers[2].SetActive(true);
         }
 
     }
@@ -186,6 +196,9 @@ public class NameTag : MonoBehaviour
         {
             redObject.gameObject.SetActive(false);
             //불꽃 재생
+            Embers[0].SetActive(false);
+            Embers[1].SetActive(true);
+            Embers[2].SetActive(false);
         }
 
 
